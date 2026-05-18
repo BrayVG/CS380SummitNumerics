@@ -1,12 +1,11 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import lab3.GradeData;
 
 public class Database {
 	private static Connection con = null;
@@ -23,7 +22,7 @@ public class Database {
 	 */
 	public void connect() {
 		
-		String url = "jdbc:mysql://localhost:3306/exampledb";
+		String url = "jdbc:mysql://localhost:3306/summitNumerics";
 		String userName = "root";
 		String password = "password";
 		
@@ -53,17 +52,16 @@ public class Database {
     }
 	
 	public boolean addUser(User userData) {
-		// need to be changed
-		String sql = String.format("INSERT INTO 380_grades VALUES (%d, '%s', '%s', %d)", data.getStudentId(), data.getFirstName(), data.getLastName(), data.getGrade());
+		String sql = String.format("INSERT INTO user (username, password, isAdmin) VALUES ('%s', '%s', FALSE)", userData.getUsername(), userData.getPassword());
         return executeUpdateQuery(sql);
 	}
 	
-	public User getUser() {
+	public User getUser(User userData) {
         try {
-            Statement st = con.createStatement();
-            // need to be changed
-            ResultSet rs = st.executeQuery("SELECT * FROM 380_grades");
-            User userData = null;
+        	String sql = "SELECT * FROM user WHERE username = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userData.getUsername());
+            ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
             	userData = new User(
@@ -71,24 +69,42 @@ public class Database {
                         rs.getString("password"),
                         rs.getBoolean("isAdmin")
                     );
+            	return userData;
+            } else {
+            	return null;
             }
-            
-            return userData;
         } catch (Exception e) {
         	System.out.println("Error: " + e.getMessage());
             return null;
         }
     }
 	
-	public boolean addScore(Score scoreData) {
-		// need to be changed
-		String sql = String.format("INSERT INTO 380_grades VALUES (%d, '%s', '%s', %d)", data.getStudentId(), data.getFirstName(), data.getLastName(), data.getGrade());
-        return executeUpdateQuery(sql);
+	public int addScore(Score scoreData) {
+		String sql = "INSERT INTO score (username, finalScore, dateTimePlayed) VALUES (?, ?, NOW())";
+		int scoreId = -1;
+	    try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	        pstmt.setString(1, scoreData.getUsername());
+	        pstmt.setInt(2, scoreData.getFinalScore());
+	        
+	        int affectedRows = pstmt.executeUpdate();
+
+	        if (affectedRows > 0) {
+	            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+	                if (rs.next()) {
+	                	scoreId = rs.getInt(1);
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+        	System.out.println("Error: " + e.getMessage());
+        }
+        return scoreId;
 	}
 	
 	public List<Score> getScores() {
         try {
-            Statement st = con.createStatement();
+        	// need to be changed
+        	Statement st = con.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM 380_grades");
             
             List<Score> list = new ArrayList<>();
@@ -110,30 +126,28 @@ public class Database {
         }
     }
 	
-	public int getRank() {
+	public int getRank(int scoreId) {
+		int rank = -1;
         try {
-            Statement st = con.createStatement();
-            // need to be changed
-            ResultSet rs = st.executeQuery("SELECT * FROM 380_grades");
-            int rank = -1;
+        	String sql = "SELECT RANK() OVER (ORDER BY finalScore DESC) AS ranking FROM score WHERE scoreId = ";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, scoreId);
+            ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
             	rank = rs.getInt("rank");
             }
-            
-            return rank;
         } catch (Exception e) {
         	System.out.println("Error: " + e.getMessage());
-            return -1;
         }
+        return rank;
     }
 	
 	// need to be changed all over
 	public List<Score> getUsersAndScores() {
         try {
             Statement st = con.createStatement();
-            // need to be changed
-            ResultSet rs = st.executeQuery("SELECT * FROM 380_grades");
+            ResultSet rs = st.executeQuery("SELECT username, finalScore, RANK() OVER (ORDER BY finalScore DESC) AS ranking FROM score");
             
             List<Score> list = new ArrayList<>();
             

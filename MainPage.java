@@ -37,7 +37,7 @@ class MainPage extends JFrame {
         add(quitButton);
 
         accountButton.addActionListener(e -> {
-            new LoginPage(this);
+            new RegistrationSystem(this);
             setVisible(false);
         });
 
