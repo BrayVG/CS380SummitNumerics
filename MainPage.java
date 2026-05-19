@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+
 class MainPage extends JFrame {
     public MainPage() {
         setTitle("this is a game");
@@ -30,6 +31,11 @@ class MainPage extends JFrame {
         startButton.setFont(new Font("Arial", Font.BOLD, 28));
         startButton.setBounds(90, 180, 220, 55);
         add(startButton);
+        
+        JButton adminButton = new JButton("Admin");
+        adminButton.setFont(new Font("Arial", Font.BOLD,28));
+        add(adminButton);
+        
 
         JButton quitButton = new JButton("Quit");
         quitButton.setFont(new Font("Arial", Font.BOLD, 28));
@@ -44,6 +50,11 @@ class MainPage extends JFrame {
         startButton.addActionListener(e -> {
             new GamePage();
             dispose();
+        });
+        
+        adminButton.addActionListener(e -> {
+            new AdminPage(this);
+            setVisible(false);
         });
 
         quitButton.addActionListener(e -> System.exit(0));

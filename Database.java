@@ -1,3 +1,4 @@
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -144,6 +145,8 @@ public class Database {
     }
 	
 	// need to be changed all over
+	//This method needs to be updated before using it for AdminPage.
+	//Also, Score does not store rank, so AdminPage should use AdminRecord.
 	public List<Score> getUsersAndScores() {
         try {
             Statement st = con.createStatement();
@@ -167,4 +170,75 @@ public class Database {
             return null;
         }
     }
+	public List<AdminRecord> getAdminRecordsInOrder() {
+		List<AdminRecord> list = new ArrayList<>();
+
+		String sql = "SELECT username, finalScore, RANK() OVER (ORDER BY finalScore DESC) AS ranking " +
+						"FROM (" +
+						"   SELECT username, MAX(finalScore) AS finalScore " +
+						"   FROM score " +
+						"   GROUP BY username " +
+						") best_scores " +
+						"ORDER BY ranking";
+
+		try {
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				AdminRecord record = new AdminRecord(
+						rs.getString("username"),
+						rs.getInt("ranking"),
+						rs.getInt("finalScore")
+				);
+
+				list.add(record);
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+
+		return list;
+	}
+		// Search users by username for AdminPage.
+		// First, get each user's highest score.
+		// Then, rank users by their highest score.
+		// Finally, filter the result by the username keyword from the search field.
+	public List<AdminRecord> searchAdminRecords(String usernameKeyword) {
+		List<AdminRecord> list = new ArrayList<>();
+		String sql = "SELECT username, finalScore, ranking FROM (" +
+						"   SELECT username, finalScore, RANK() OVER (ORDER BY finalScore DESC) AS ranking " +
+						"   FROM (" +
+						"       SELECT username, MAX(finalScore) AS finalScore " +
+						"       FROM score " +
+						"       GROUP BY username " +
+						"   ) best_scores " +
+						") ranked " +
+						"WHERE username LIKE ? " +
+						"ORDER BY ranking";
+
+		try {
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%" + usernameKeyword + "%");
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				AdminRecord record = new AdminRecord(
+						rs.getString("username"),
+						rs.getInt("ranking"),
+						rs.getInt("finalScore")
+				);
+
+				list.add(record);
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+
+		return list;
+	}
+
 }
