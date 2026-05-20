@@ -13,21 +13,19 @@ import javax.swing.BorderFactory;
 import java.util.List;
 
 class AdminPage extends JFrame{
-	/**
-	 * 
-	 */
+
 	JFrame previousPage;
 	private JTextField TitlePanel;
 	private JTextField SearchField;
 	private Database db = new Database();
-	private JLabel[] userRows = new JLabel[7];
+	private JLabel[] userRows = new JLabel[7]; // Up to 7 rows.
 	private JLabel[] rankRows = new JLabel[7];
 	private JLabel[] scoreRows = new JLabel[7];
 //    JButton backButton;
 //    JButton listButton;
 	
 	public AdminPage(JFrame previousPage) {
-		this.previousPage = previousPage;
+		this.previousPage = previousPage; // Save the previous page.
 		setResizable(false);
 		setSize(570,800);
 		setTitle("Admin Page");
@@ -49,7 +47,10 @@ class AdminPage extends JFrame{
 		TitlePanel.setText("Admin Table");
 		TopPanel.add(TitlePanel);
 		TitlePanel.setColumns(12);
-		
+		/*
+		 * ListButton shows all users in rank order.
+		 * It calls Database.getAdminRecordsInOrder().
+		 */
 		JButton ListButton = new JButton("List in order");
 		ListButton.setBackground(new Color(240, 240, 240));
 		ListButton.setBounds(433, 27, 111, 23);
@@ -68,7 +69,9 @@ class AdminPage extends JFrame{
 		CentralPanel.setBounds(0, 79, 554, 668);
 		getContentPane().add(CentralPanel);
 		CentralPanel.setLayout(null);
-		
+		/*
+		 * Search Button searches for users by username.
+		 */
 		JButton SearchButton = new JButton("Search");
 		SearchButton.setForeground(Color.BLACK);
 		SearchButton.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -76,11 +79,12 @@ class AdminPage extends JFrame{
 		SearchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String keyword = SearchField.getText().toLowerCase().trim();
-				if (keyword.isEmpty()){
+				if (keyword.isEmpty()){ // If the search field is empty, show the warning.
 					JOptionPane.showMessageDialog(AdminPage.this, "Please enter a username");
 					return;
 				}
-				List<AdminRecord> records = db.searchAdminRecords(keyword);
+				List<AdminRecord> records = db.searchAdminRecords(keyword); //Search matching users from the database.
+				// This calls Database.searchAdminRecords().
 				if (records.isEmpty()){
 					clearTable();
 					JOptionPane.showMessageDialog(AdminPage.this, "No user found");
@@ -125,7 +129,25 @@ class AdminPage extends JFrame{
 		ScoreLabel.setBackground(Color.GRAY);
 		ScoreLabel.setBounds(414, 10, 64, 41);
 		TablePanel.add(ScoreLabel);
-		
+
+		int startY = 80;
+		int gap = 55;
+
+		for (int i = 0; i < 7; i++) {
+			userRows[i] = createDataLabel();
+			userRows[i].setBounds(25, startY + i * gap, 130, 30);
+			TablePanel.add(userRows[i]);
+
+			rankRows[i] = createDataLabel();
+			rankRows[i].setBounds(205, startY + i * gap, 120, 30);
+			TablePanel.add(rankRows[i]);
+
+			scoreRows[i] = createDataLabel();
+			scoreRows[i].setBounds(370, startY + i * gap, 120, 30);
+			TablePanel.add(scoreRows[i]);
+		}
+		// The Back button will return to previous page (MainPage).
+
 		JButton BackButton = new JButton("Back");
 		BackButton.setFont(new Font("Arial", Font.PLAIN, 15));
 		BackButton.addActionListener(new ActionListener() {
@@ -140,6 +162,11 @@ class AdminPage extends JFrame{
 		setVisible(true);
 		
 	}
+	/*
+	 * Create one data label for the table.
+	 * This method is used to create the empty labels for username, rank,
+	 * and score rows. Later, displayRecords() will set text into them.
+	 * */
 	private JLabel createDataLabel() {
 		JLabel label = new JLabel("", SwingConstants.CENTER);
 		label.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -147,11 +174,18 @@ class AdminPage extends JFrame{
 		label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
 		return label;
 	}
-
+	/*
+	 * Display database records in the admin table.
+	 * records contains AdminRecord objects.
+	 * Each AdminRecord has:
+	 * username
+	 * rank
+	 * finalScore
+	 * */
 	private void displayRecords(List<AdminRecord> records) {
 		clearTable();
 
-		int size = Math.min(records.size(), 7);
+		int size = Math.min(records.size(), 7); // only fill 7 records
 
 		for (int i = 0; i < size; i++) {
 			AdminRecord record = records.get(i);
@@ -161,7 +195,11 @@ class AdminPage extends JFrame{
 			scoreRows[i].setText(String.valueOf(record.getFinalScore()));
 		}
 	}
-
+/*
+ *  Clear all table data.
+ * This is used before displaying new search results,
+ * or when no user is found.
+ * */
 	private void clearTable() {
 		for (int i = 0; i < 7; i++) {
 			userRows[i].setText("");

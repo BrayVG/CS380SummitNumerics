@@ -170,6 +170,13 @@ public class Database {
             return null;
         }
     }
+
+	/*
+	 * This method is used by the AdminPage "List in order" button.
+	 * It gets each user's highest score from the score table,
+	 * ranks users by highest score from high to low,
+	 * and returns the result as a list of AdminRecord objects.
+	 */
 	public List<AdminRecord> getAdminRecordsInOrder() {
 		List<AdminRecord> list = new ArrayList<>();
 
@@ -201,10 +208,11 @@ public class Database {
 
 		return list;
 	}
-		// Search users by username for AdminPage.
-		// First, get each user's highest score.
-		// Then, rank users by their highest score.
-		// Finally, filter the result by the username keyword from the search field.
+		/* Search users by username for AdminPage.
+		 * First, get each user's highest score.
+		 * Then, rank users by their highest score.
+		 * Finally, filter the result by the username keyword from the search field.
+		 */
 	public List<AdminRecord> searchAdminRecords(String usernameKeyword) {
 		List<AdminRecord> list = new ArrayList<>();
 		String sql = "SELECT username, finalScore, ranking FROM (" +

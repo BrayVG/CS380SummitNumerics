@@ -52,7 +52,8 @@ class MainPage extends JFrame {
             dispose();
         });
         
-        adminButton.addActionListener(e -> {
+        adminButton.addActionListener(e -> { // add the admin button in MainPage,
+            // this will show the Admin button between the Start and the Quit
             new AdminPage(this);
             setVisible(false);
         });
