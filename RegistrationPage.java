@@ -80,6 +80,7 @@ public class RegistrationPage extends JFrame {
 	private void signUp() {
     	this.setData();
     	
+    	// validation checks
     	if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0 || passwordReenterField.getPassword().length == 0) {
             JOptionPane.showMessageDialog(this,
                     "Please input username, password, and confirm password.",
@@ -104,6 +105,7 @@ public class RegistrationPage extends JFrame {
             return;
         }
     	
+    	// registration success
     	if (db.addUser(this.user)) {
     		JOptionPane.showMessageDialog(this,
                     "Hello! Your account registration succeeded.",
@@ -116,6 +118,9 @@ public class RegistrationPage extends JFrame {
     	}
     }
 	
+	/**
+     * sets field data to User 
+     */
 	private void setData() {
     	this.user.setUsername(nameField.getText());
     	this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));

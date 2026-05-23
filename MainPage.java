@@ -4,6 +4,7 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 
@@ -31,11 +32,17 @@ class MainPage extends JFrame {
         startButton.setFont(new Font("Arial", Font.BOLD, 28));
         startButton.setBounds(90, 180, 220, 55);
         add(startButton);
+        if (UserSession.getInstance().isAdmin()) {
+        	startButton.setVisible(false);
+        }
         
         JButton adminButton = new JButton("Admin");
         adminButton.setFont(new Font("Arial", Font.BOLD,28));
+        adminButton.setBounds(90, 180, 220, 55);
         add(adminButton);
-        
+        if (UserSession.getInstance().isAdmin()) {
+        	adminButton.setVisible(true);
+        }
 
         JButton quitButton = new JButton("Quit");
         quitButton.setFont(new Font("Arial", Font.BOLD, 28));
@@ -46,14 +53,21 @@ class MainPage extends JFrame {
             new RegistrationSystem(this);
             setVisible(false);
         });
-
+        
+        
         startButton.addActionListener(e -> {
-            new GamePage();
-            dispose();
+            if (UserSession.getInstance().isLoggedIn()) {
+            	new GamePage();
+                dispose();            	
+            } else {
+            	JOptionPane.showMessageDialog(this,
+                        "Need to be logged in.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            }
         });
         
-        adminButton.addActionListener(e -> { // add the admin button in MainPage,
-            // this will show the Admin button between the Start and the Quit
+        adminButton.addActionListener(e -> {
             new AdminPage(this);
             setVisible(false);
         });

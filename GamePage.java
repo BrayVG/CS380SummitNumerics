@@ -136,7 +136,11 @@ class GamePage extends JFrame {
 
             if (timeLeft <= 0) {
                 timer.stop();
-                JOptionPane.showMessageDialog(this, "Time is up!\nFinal score: " + score);
+                Database db = new Database();
+                int scoreId = db.addScore(score, UserSession.getInstance().getLoggedInUsername());
+                int rank = db.getRank(scoreId);
+                
+                JOptionPane.showMessageDialog(this, "Time is up!\nFinal score: " + score + "\nrank: " + rank);
                 dispose();
                 new MainPage();
             }

@@ -72,6 +72,7 @@ class LoginPage extends JFrame {
     private void login() {
     	this.setData();
     	
+    	// validation checks
     	if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0) {
             JOptionPane.showMessageDialog(this,
                     "Please input username and password.",
@@ -96,12 +97,20 @@ class LoginPage extends JFrame {
             return;
         }
 
+        // set status to user session
+        User userData = db.getUser(user);
+        UserSession userSession = UserSession.getInstance();
+        userSession.login(userData);
+        
         JOptionPane.showMessageDialog(this, "Login successful!");
         MainPage mainPage = new MainPage();
         mainPage.setVisible(true);
         this.dispose();
     }
     
+    /**
+     * sets field data to User 
+     */
     private void setData() {
     	this.user.setUsername(nameField.getText());
     	this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));

@@ -80,12 +80,12 @@ public class Database {
         }
     }
 	
-	public int addScore(Score scoreData) {
+	public int addScore(int score, String username) {
 		String sql = "INSERT INTO score (username, finalScore, dateTimePlayed) VALUES (?, ?, NOW())";
 		int scoreId = -1;
 	    try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-	        pstmt.setString(1, scoreData.getUsername());
-	        pstmt.setInt(2, scoreData.getFinalScore());
+	        pstmt.setString(1, username);
+	        pstmt.setInt(2, score);
 	        
 	        int affectedRows = pstmt.executeUpdate();
 
@@ -130,13 +130,13 @@ public class Database {
 	public int getRank(int scoreId) {
 		int rank = -1;
         try {
-        	String sql = "SELECT RANK() OVER (ORDER BY finalScore DESC) AS ranking FROM score WHERE scoreId = ";
+        	String sql = "SELECT RANK() OVER (ORDER BY finalScore DESC) AS ranking FROM score WHERE scoreId = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, scoreId);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-            	rank = rs.getInt("rank");
+            	rank = rs.getInt("ranking");
             }
         } catch (Exception e) {
         	System.out.println("Error: " + e.getMessage());
