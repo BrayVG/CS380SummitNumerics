@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,10 +10,19 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+/**
+ * It will display 5 questions, answer fields, the player's score,
+ * and a countdown timer.
+ * Users can answer the questions, and press next button for
+ * keeping answer more questions(infinite).
+ * The quit button will navigate users back to mainPage.
+ */
 class GamePage extends JFrame {
-    JLabel[] questionLabels = new JLabel[5];
-    JTextField[] answerFields = new JTextField[5];
 
+    JLabel[] questionLabels = new JLabel[5]; // display 5 questions
+    JTextField[] answerFields = new JTextField[5]; // display 5 answer fields
+
+    // Stores the five question objects used in the game.
     Question[] questions = {
             new BaseQuestion(),
             new BaseQuestion(),
@@ -23,21 +31,31 @@ class GamePage extends JFrame {
             new BaseQuestion()
     };
 
-    int score = 0;
-    JLabel scoreLabel;
-    JLabel timerLabel;
+    int score = 0; // Stores the player's current score.
+    JLabel scoreLabel; // display scores
+    JLabel timerLabel; // display timer
 
     int timeLeft = 300;
     Timer timer;
 
+    /**
+     * The game starts and starts the timer.
+     * Timer 300 second -> 5:00.
+     * score label starts from 0.
+     * There is 5 questions and 5 answer fields.
+     * Every time, user press the next button will check
+     * correctness of the user's answers and bring a new set of questions.
+     */
+
     public GamePage() {
-        setTitle("Game Page");
+
+        setTitle("TEST YOUR BRAIN LIMIT!");
         setSize(650, 560);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         getContentPane().setBackground(new Color(220, 220, 220));
 
-        JLabel title = new JLabel("Game Title", SwingConstants.CENTER);
+        JLabel title = new JLabel("Summit Numerics", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 28));
         title.setOpaque(true);
         title.setBackground(new Color(160, 160, 160));
@@ -51,7 +69,7 @@ class GamePage extends JFrame {
         questionPanel.setBounds(30, 90, 380, 380);
         add(questionPanel);
 
-        JLabel interfaceLabel = new JLabel("Game Interface");
+        JLabel interfaceLabel = new JLabel("easy right?");
         interfaceLabel.setFont(new Font("Arial", Font.BOLD, 28));
         interfaceLabel.setBounds(30, 10, 300, 40);
         questionPanel.add(interfaceLabel);
@@ -106,6 +124,10 @@ class GamePage extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Generates a new set of questions and displays them on the screen.
+     * Cleans the answerField.
+     */
     private void generateQuestions() {
         for (int i = 0; i < questions.length; i++) {
             questions[i].generateQuestion();
@@ -113,6 +135,12 @@ class GamePage extends JFrame {
             answerFields[i].setText("");
         }
     }
+
+    /***
+     * Checks the player's answers for all questions.
+     * If an answer is correct, the player's score increases by 10 points.
+     * The score label is updated after checking all answers.
+     */
 
     private void checkAnswers() {
         for (int i = 0; i < questions.length; i++) {
@@ -124,12 +152,19 @@ class GamePage extends JFrame {
         scoreLabel.setText("Score: " + score);
     }
 
+    /**
+     * Starts the countdown timer for the game.
+     * The timer updates every second.
+     * When time reaches zero, the game stops, the final score is saved
+     * to the database, the player's rank is calculated, and the user
+     * returns to the main page.
+     */
     private void startTimer() {
         if (timer != null) {
             timer.stop();
         }
 
-        timer = new Timer(1000, e -> {
+        timer = new Timer(1000, e -> { // 1000ms = 1 sec
             timeLeft--;
 
             timerLabel.setText(String.format("%02d:%02d", timeLeft / 60, timeLeft % 60));
@@ -139,7 +174,7 @@ class GamePage extends JFrame {
                 Database db = new Database();
                 int scoreId = db.addScore(score, UserSession.getInstance().getLoggedInUsername());
                 int rank = db.getRank(scoreId);
-                
+
                 JOptionPane.showMessageDialog(this, "Time is up!\nFinal score: " + score + "\nrank: " + rank);
                 dispose();
                 new MainPage();
@@ -148,6 +183,12 @@ class GamePage extends JFrame {
 
         timer.start();
     }
+
+    /**
+     * Allows the player to quit the game early.
+     * If the player confirms quitting, the timer stops and the game
+     * returns to the main page without saving points.
+     */
 
     private void quitGame() {
         int result = JOptionPane.showConfirmDialog(this,

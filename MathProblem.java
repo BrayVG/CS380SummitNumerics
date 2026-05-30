@@ -9,19 +9,19 @@ class MathProblem {
     }
 
     // getters and setters
-	public String getQuestionText() {
-		return questionText;
-	}
+    public String getQuestionText() {
+        return questionText;
+    }
 
-	public void setQuestionText(String questionText) {
-		this.questionText = questionText;
-	}
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
+    }
 
-	public int getCorrectAnswer() {
-		return correctAnswer;
-	}
+    public int getCorrectAnswer() {
+        return correctAnswer;
+    }
 
-	public void setCorrectAnswer(int correctAnswer) {
-		this.correctAnswer = correctAnswer;
-	}
+    public void setCorrectAnswer(int correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
 }

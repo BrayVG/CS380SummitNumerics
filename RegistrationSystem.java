@@ -1,5 +1,4 @@
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -8,18 +7,24 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JButton;
 
+/**
+ * RegistrationSystem Page for users to signup and login.
+ * The signup button for users to sign-up
+ * ,and login button for user to log-in.
+ * The back button will navigate users back to the mainPage.
+ */
 public class RegistrationSystem extends JFrame {
-	private JFrame previousPage;
-	
-	RegistrationSystem(JFrame previousPage) {
-		this.previousPage = previousPage;
-		
-		setTitle("Ultimate Registration System");
+    private JFrame previousPage;
+
+    RegistrationSystem(JFrame previousPage) {
+        this.previousPage = previousPage;
+
+        setTitle("Ultimate Registration System");
         setSize(420, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(220, 220, 220));
-		
+
         JLabel title = new JLabel("Ultimate Registration System", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setOpaque(true);
@@ -27,35 +32,35 @@ public class RegistrationSystem extends JFrame {
         title.setForeground(Color.WHITE);
         title.setBounds(0, 0, 420, 60);
         getContentPane().add(title);
-        		
-		JButton signUpButton = new JButton("Sign up");
-		signUpButton.setBounds(52, 127, 90, 35);
-		this.getContentPane().add(signUpButton);
-		
-		signUpButton.addActionListener(e -> {
+
+        JButton signUpButton = new JButton("Sign up");
+        signUpButton.setBounds(52, 127, 90, 35);
+        this.getContentPane().add(signUpButton);
+
+        signUpButton.addActionListener(e -> {
             new RegistrationPage(this);
             setVisible(false);
         });
-		
-		JButton loginButton = new JButton("Login");
-		loginButton.setBounds(162, 127, 90, 35);
-		this.getContentPane().add(loginButton);
-		
-		loginButton.addActionListener(e -> {
+
+        JButton loginButton = new JButton("Login");
+        loginButton.setBounds(162, 127, 90, 35);
+        this.getContentPane().add(loginButton);
+
+        loginButton.addActionListener(e -> {
             new LoginPage(this);
             setVisible(false);
         });
-		
-		JButton backButton = new JButton("Back");
-		backButton.setBounds(271, 127, 90, 35);
-		this.getContentPane().add(backButton);
-		
-		backButton.addActionListener(e -> {
+
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(271, 127, 90, 35);
+        this.getContentPane().add(backButton);
+
+        backButton.addActionListener(e -> {
             previousPage.setVisible(true);
             dispose();
         });
-		
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
-	}
+
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
 }

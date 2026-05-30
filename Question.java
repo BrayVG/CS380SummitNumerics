@@ -1,3 +1,6 @@
+/**
+ * Question interface.
+ *  */
 interface Question {
     void generateQuestion();
 

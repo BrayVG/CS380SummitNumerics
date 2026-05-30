@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,6 +8,13 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/**
+ * The LoginPage helps users to log in their account.
+ * Users need to typing their registered name and password for logging in.
+ * After typing name and password, press login button will show different
+ * possible system replies.
+ * The back button will navigate users back to RegistrationSystem page.
+ */
 class LoginPage extends JFrame {
     JTextField nameField;
     JPasswordField passwordField;
@@ -19,13 +25,13 @@ class LoginPage extends JFrame {
     public LoginPage(JFrame previousPage) {
         this.previousPage = previousPage;
 
-        setTitle("Registration/Login");
+        setTitle("Login");
         setSize(420, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(220, 220, 220));
 
-        JLabel title = new JLabel("Registration/Login", SwingConstants.CENTER);
+        JLabel title = new JLabel("Login", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setOpaque(true);
         title.setBackground(new Color(160, 160, 160));
@@ -69,18 +75,27 @@ class LoginPage extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Login validation checks:
+     * 1. If name and password is empty, it will show message.
+     * 2. if name and password is not existed, it will show message as warning.
+     * 3. If password is not match with name in database,
+     * it will show message as warning.
+     * 4. If login is successful, it saves the user data into UserSession
+     * and opens the main page.
+     */
     private void login() {
-    	this.setData();
-    	
-    	// validation checks
-    	if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0) {
+        this.setData();
+
+        // empty
+        if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0) {
             JOptionPane.showMessageDialog(this,
                     "Please input username and password.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-    	
+        // user not exist
         if (db.getUser(this.user) == null) {
             JOptionPane.showMessageDialog(this,
                     "This user doesn't exist,\nplease make an account.",
@@ -101,18 +116,18 @@ class LoginPage extends JFrame {
         User userData = db.getUser(user);
         UserSession userSession = UserSession.getInstance();
         userSession.login(userData);
-        
+
         JOptionPane.showMessageDialog(this, "Login successful!");
         MainPage mainPage = new MainPage();
         mainPage.setVisible(true);
         this.dispose();
     }
-    
+
     /**
-     * sets field data to User 
+     * sets field data to User
      */
     private void setData() {
-    	this.user.setUsername(nameField.getText());
-    	this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));
+        this.user.setUsername(nameField.getText());
+        this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));
     }
 }

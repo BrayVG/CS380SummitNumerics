@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,22 +8,30 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/**
+ * The Registration Page, it will help user to register their accounts.
+ * The account will need user's name, password, and password re-enter.
+ * Press Sign-up button after typing the information, and
+ * it will show the message.
+ * The back button will navigate users back to the ReregistrationSystem page.
+ */
+
 public class RegistrationPage extends JFrame {
-	private JTextField nameField;
-	private JPasswordField passwordField;
-	private JPasswordField passwordReenterField;
-	private User user = new User();
+    private JTextField nameField;
+    private JPasswordField passwordField;
+    private JPasswordField passwordReenterField;
+    private User user = new User();
     private Database db = new Database();
 
-	RegistrationPage(JFrame previousPage) {
+    RegistrationPage(JFrame previousPage) {
 
-        setTitle("Registration/Login");
+        setTitle("Registration");
         setSize(420, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(220, 220, 220));
 
-        JLabel title = new JLabel("Registration/Login", SwingConstants.CENTER);
+        JLabel title = new JLabel("Registration", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setOpaque(true);
         title.setBackground(new Color(160, 160, 160));
@@ -57,12 +64,12 @@ public class RegistrationPage extends JFrame {
         JButton backButton = new JButton("Back");
         backButton.setBounds(213, 218, 90, 35);
         getContentPane().add(backButton);
-        
+
         JLabel lblPasswordReenter = new JLabel("Password re-enter:");
         lblPasswordReenter.setFont(new Font("Arial", Font.BOLD, 20));
         lblPasswordReenter.setBounds(10, 165, 191, 30);
         getContentPane().add(lblPasswordReenter);
-        
+
         passwordReenterField = new JPasswordField();
         passwordReenterField.setBounds(198, 165, 160, 25);
         getContentPane().add(passwordReenterField);
@@ -75,54 +82,66 @@ public class RegistrationPage extends JFrame {
 
         setLocationRelativeTo(null);
         setVisible(true);
-	}
-	
-	private void signUp() {
-    	this.setData();
-    	
-    	// validation checks
-    	if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0 || passwordReenterField.getPassword().length == 0) {
+    }
+
+    /**
+     * Sign-up validation checks:
+     * 1. If users leave empty for their information(name or password or re-enter password),
+     * it will show message for warning.
+     * 2. If users' password not match with their re-enter password,
+     * it will show message for warning.
+     * 3. If users' user-name already exists in the database,
+     * it will show message for warning.
+     * 4. If users pass registration, it will show message
+     * and return to the mainPage.
+     */
+    private void signUp() {
+        this.setData();
+
+        // empty
+        if (nameField.getText().isEmpty() || passwordField.getPassword().length == 0 || passwordReenterField.getPassword().length == 0) {
             JOptionPane.showMessageDialog(this,
                     "Please input username, password, and confirm password.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-    	
-    	if (!new String(passwordField.getPassword()).matches(new String(passwordReenterField.getPassword()))) {
+        // password not match
+        if (!new String(passwordField.getPassword()).matches(new String(passwordReenterField.getPassword()))) {
             JOptionPane.showMessageDialog(this,
                     "password and confirm password do not match.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-    	if (db.getUser(this.user) != null) {
+        // exist
+        if (db.getUser(this.user) != null) {
             JOptionPane.showMessageDialog(this,
                     "This username already exists,\nplease make a different username.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-    	
-    	// registration success
-    	if (db.addUser(this.user)) {
-    		JOptionPane.showMessageDialog(this,
+
+        // registration success
+        if (db.addUser(this.user)) {
+            JOptionPane.showMessageDialog(this,
                     "Hello! Your account registration succeeded.",
                     "Welcome!",
                     JOptionPane.INFORMATION_MESSAGE);
-    		
-    		MainPage mainPage = new MainPage();
+
+            MainPage mainPage = new MainPage();
             mainPage.setVisible(true);
             this.dispose();
-    	}
+        }
     }
-	
-	/**
-     * sets field data to User 
+
+    /**
+     * Save nameField -> user. username.
+     * Password -> hash -> save to passwordField.
      */
-	private void setData() {
-    	this.user.setUsername(nameField.getText());
-    	this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));
+    private void setData() {
+        this.user.setUsername(nameField.getText());
+        this.user.setPassword(PasswordHasher.hashPassword(new String(passwordField.getPassword())));
     }
 }
