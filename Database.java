@@ -53,11 +53,22 @@ public class Database {
         }
     }
 
+    /**
+     * add a new tuple to user
+     * @param userData
+     * @return true if the procedure succeeded
+     * false if not
+     */
     public boolean addUser(User userData) {
         String sql = String.format("INSERT INTO user (username, password, isAdmin) VALUES ('%s', '%s', FALSE)", userData.getUsername(), userData.getPassword());
         return executeUpdateQuery(sql);
     }
 
+    /**
+     * get a tuple of user that matches with the username
+     * @param userData
+     * @return User
+     */
     public User getUser(User userData) {
         try {
             String sql = "SELECT * FROM user WHERE username = ?";
@@ -81,6 +92,12 @@ public class Database {
         }
     }
 
+    /**
+     * add a new tuple to score
+     * @param score
+     * @param username
+     * @return new scoreId
+     */
     public int addScore(int score, String username) {
         String sql = "INSERT INTO score (username, finalScore, dateTimePlayed) VALUES (?, ?, NOW())";
         int scoreId = -1;
@@ -103,31 +120,11 @@ public class Database {
         return scoreId;
     }
 
-    public List<Score> getScores() {
-        try {
-            // need to be changed
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM 380_grades");
-
-            List<Score> list = new ArrayList<>();
-
-            while (rs.next()) {
-                Score score = new Score(
-                        rs.getInt("scoreID"),
-                        rs.getString("username"),
-                        rs.getInt("finalScore"),
-                        rs.getTimestamp("dateTimePlayed").toLocalDateTime()
-                );
-                list.add(score);
-            }
-
-            return list;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-    }
-
+    /**
+     * get a rank for scoreId
+     * @param scoreId
+     * @return rank
+     */
     public int getRank(int scoreId) {
         int rank = -1;
         try {
@@ -143,33 +140,6 @@ public class Database {
             System.out.println("Error: " + e.getMessage());
         }
         return rank;
-    }
-
-    // need to be changed all over
-    //This method needs to be updated before using it for AdminPage.
-    //Also, Score does not store rank, so AdminPage should use AdminRecord.
-    public List<Score> getUsersAndScores() {
-        try {
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT username, finalScore, RANK() OVER (ORDER BY finalScore DESC) AS ranking FROM score");
-
-            List<Score> list = new ArrayList<>();
-
-            while (rs.next()) {
-                Score score = new Score(
-                        rs.getInt("scoreID"),
-                        rs.getString("username"),
-                        rs.getInt("finalScore"),
-                        rs.getTimestamp("dateTimePlayed").toLocalDateTime()
-                );
-                list.add(score);
-            }
-
-            return list;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
     }
 
     /*
