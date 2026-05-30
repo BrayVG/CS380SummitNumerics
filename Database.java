@@ -25,7 +25,7 @@ public class Database {
 
         String url = "jdbc:mysql://localhost:3306/summitNumerics";
         String userName = "root";
-        String password = "cs380";
+        String password = "password";
 
         try {
             con = DriverManager.getConnection(url, userName, password);
